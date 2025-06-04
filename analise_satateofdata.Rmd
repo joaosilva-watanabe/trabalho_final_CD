@@ -1,0 +1,10 @@
+---
+title: "Análise 'State of Data Brazil 2023-2024'"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
