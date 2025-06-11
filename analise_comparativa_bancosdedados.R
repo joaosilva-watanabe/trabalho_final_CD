@@ -87,5 +87,13 @@ tabela07 <- bancoGringo %>%
     media_salarial = mean(salario_usdt, na.rm = TRUE)
   )
 
+# Análise 8 - Salários médios por tamanho da empresa (banco Gringo)
+bancoGringo$tamanho_da_empresa <- factor(bancoGringo$tamanho_da_empresa, 
+                                           levels = c("Small", "Medium", "Large")) #Organiza os níveis dos tamanhos das empresas 
 
-
+grafico_08 <- ggplot(data = bancoGringo, mapping = aes(x = tamanho_da_empresa , y = salario_usdt ))+
+  geom_boxplot(fill = "darkred") +
+  labs(title = "Salários médios para cada tamanho de empresa",
+       x = "Tamanho da empresa",
+       y = "Salário anual médio ($)") + 
+  theme_bw()
