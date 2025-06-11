@@ -1,0 +1,46 @@
+#Carregando pacotes necessários
+library(ggplot2)
+
+# Importando os bancos de dados do módulo de normalização dos bancos 
+source("normalizacao_bancodedados.R")
+
+# Análise 1 - salários por nível de experiência -- banco Gringo
+ggplot(data = bancoGringo, mapping = aes(x = nivel_de_experiencia, y = salario_usdt)) +
+  geom_boxplot(fill = "darkgreen") + 
+  labs(title = "Distribuição de salários por nível de experiência no exterior",
+       x = "Níveis de experiência", 
+       y = "Salário anual ($)") +
+  theme_bw()
+
+# Análise 2 - salários por nível de experiência -- banco BR
+ggplot(data = bancoBR, mapping = aes(x = nivel_de_experiencia, y = renda_anual_usd))+
+  geom_boxplot(fill = "blue") +
+  labs(title = "Distribuição de salários por nível de experiência no Brasil",
+       x = "Níveis de experiências",
+       y = "Salário anual ($)") + 
+  theme_bw()
+
+# Análise 3 - Mapa da distribuição dos salários no Brasil
+library(geobr)
+mapa_estados <- read_state(year = 2020)
+
+#Calculando a média salarial
+salario_estado <- bancoBR %>%
+  group_by(Estado_onde_vive) %>%
+  summarise(media_salarial = mean(renda_anual_brl, na.rm = TRUE)) %>%
+  ungroup()
+
+# Verificando se os nomes batem antes de juntar
+mapa_estado_salario <- mapa_estados %>%
+  left_join(salario_estado, by = c("name_state" = "Estado_onde_vive"))
+
+    # Fazendo o join com base nos nomes dos estados
+mapa_salario <- mapa_estados %>%
+  left_join(salario_estado, by = c("name_state" = "Estado_onde_vive"))
+ggplot(data = mapa_salario) +
+  geom_sf(aes(fill = media_salarial), color = "grey") +
+  scale_fill_viridis_c(option = "plasma", na.value = "grey90", name = "Salário médio (BRL)") +
+  theme_minimal() +
+  labs(title = "Mapa de calor do salário médio por estado no Brasil") +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())

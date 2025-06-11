@@ -30,16 +30,16 @@ bancoBR24$local_da_empresa <- "Brasil"
 bancoBR24$local_de_residencia <- "Brasil"
 # Criando novos bancos de dados com somente os dados de interesse (para os bancos nacionais)
 bancoBR23 <- bancoBR23 %>% 
-  select(, c(32,30,37,36,35, 55,400, 401, 402))
+  select(, c(23, 32,30,37,36,35, 55,400, 401, 402))
 bancoBR24 <- bancoBR24 %>% 
-  select(, c(36, 39, 34, 40, 41, 48, 404, 405, 406))
+  select(, c(29, 36, 39, 34, 40, 41, 48, 404, 405, 406))
 
 # Renomeando as colunas do banco de dados BR de 2023
-names(bancoBR23)<- c("tamanho_da_empresa", "tipo_de_contrato", "salario_brl",
+names(bancoBR23)<- c("Estado_onde_vive", "tamanho_da_empresa", "tipo_de_contrato", "salario_brl",
                      "nivel_de_experiencia", "cargo","trabalho_remoto_flexivel", "data_da_resposta", 
                      "local_da_empresa", "local_de_residencia")
 # Renomeando as colunas do banco de dados BR de 2024
-names(bancoBR24)<- c("tamanho_da_empresa", "cargo", "tipo_de_contrato", "nivel_de_experiencia",
+names(bancoBR24)<- c("Estado_onde_vive","tamanho_da_empresa", "cargo", "tipo_de_contrato", "nivel_de_experiencia",
                      "salario_brl", "trabalho_remoto_flexivel", "data_da_resposta", "local_da_empresa",
                      "local_de_residencia")
 
@@ -47,9 +47,9 @@ names(bancoBR24)<- c("tamanho_da_empresa", "cargo", "tipo_de_contrato", "nivel_d
 
 #Criando objetos para armazenar os valores
 media_salarial23 <- bancoBR23 %>% 
-  select(3)
+  select(4)
 media_salarial24 <- bancoBR24 %>% 
-  select(5)
+  select(6)
 
 # Pegando o ponto médio de cada intervalo
 media_salarial23 <- media_salarial23 %>%
@@ -76,16 +76,35 @@ media_salarial24 <- media_salarial24 %>%
 
 #Fazendo a renda anual
 media_salarial23 <- media_salarial23 %>%
-  mutate(renda_anual = salario_brl * 12) %>%
+  mutate(renda_anual_brl = salario_brl * 12) %>%
   select(-salario_brl)
 
 media_salarial24 <- media_salarial24 %>%
-  mutate(renda_anual = salario_brl * 12) %>%
+  mutate(renda_anual_brl = salario_brl * 12) %>%
   select(-salario_brl)
 
 #Convertendo esses valores baseado na média da cotação do dólar nos respectivos anos 
 media_salarial23 <- media_salarial23 %>%
-  mutate(renda_anual_usd = renda_anual / 4.99)
+  mutate(renda_anual_usd = renda_anual_brl / 4.99)
 
 media_salarial24 <- media_salarial24 %>%
-  mutate(renda_anual_usd = renda_anual / 5.57)
+  mutate(renda_anual_usd = renda_anual_brl / 5.57)
+
+#Unindo os dois bancos de dados brasileiros
+bancoBR <- rbind(bancoBR23, bancoBR24)
+
+    # Adicionando os valores de salários
+salarios <- rbind(media_salarial23, media_salarial24)
+bancoBR <- cbind(bancoBR, salarios)
+
+# Tratando valores vazios
+bancoBR[bancoBR == ''] <- NA
+
+# Cálculo do salário médio por estado
+salario_estado <- bancoBR %>%
+  group_by(Estado_onde_vive) %>%
+  summarise(media_salarial = mean(renda_anual_brl, na.rm = TRUE))
+
+# Formatando os valores para Estado 
+bancoBR <- bancoBR %>%
+  mutate(Estado_onde_vive = str_trim(str_remove(Estado_onde_vive, "\\s*\\(.*\\)")))
