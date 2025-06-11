@@ -7,7 +7,7 @@ source("normalizacao_bancodedados.R")
 # Análise 1 - salários por nível de experiência -- banco Gringo
 bancoGringo$nivel_de_experiencia <- factor(bancoGringo$nivel_de_experiencia, 
                             levels = c("Entry-level", "Mid-level", "Senior-level", "Executive-level")) #Organiza os níveis dos cargos 
-ggplot(data = bancoGringo, mapping = aes(x = nivel_de_experiencia, y = salario_usdt)) +
+grafico_01 <- ggplot(data = bancoGringo, mapping = aes(x = nivel_de_experiencia, y = salario_usdt)) +
   geom_boxplot(fill = "darkgreen") + 
   labs(title = "Distribuição de salários por nível de experiência no exterior",
        x = "Níveis de experiência", 
@@ -15,13 +15,12 @@ ggplot(data = bancoGringo, mapping = aes(x = nivel_de_experiencia, y = salario_u
   theme_bw()
 
 # Análise 2 - salários por nível de experiência -- banco BR
-ggplot(data = bancoBR, mapping = aes(x = nivel_de_experiencia, y = renda_anual_usd))+
+grafico_02 <- ggplot(data = bancoBR, mapping = aes(x = nivel_de_experiencia, y = renda_anual_usd))+
   geom_boxplot(fill = "blue") +
   labs(title = "Distribuição de salários por nível de experiência no Brasil",
        x = "Níveis de experiências",
        y = "Salário anual ($)") + 
   theme_bw()
-
 
 # Análise 3 - Mapa da distribuição dos salários no Brasil
 library(geobr)
@@ -72,4 +71,21 @@ tabela05 <-bancoGringo %>%
     maximo = max(salario_usdt, na.rm = TRUE),
     n = n()
   )
-  
+
+# Análise 6 - Tabela bivariada --> Cargo X Salário (banco BR)
+tabela06 <- bancoBR %>%
+  group_by(cargo)%>%
+  summarise(
+    media_salarial = mean(renda_anual_usd, na.rm = TRUE)
+  )
+
+
+# Análise 7 - Tabela bivariada --> Cargo X Salário (banco gringo)
+tabela07 <- bancoGringo %>%
+  group_by(cargo) %>%
+  summarise(
+    media_salarial = mean(salario_usdt, na.rm = TRUE)
+  )
+
+
+
