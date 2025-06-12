@@ -113,3 +113,49 @@ grafico_09 <- ggplot(data = bancoBR, mapping = aes(x = tamanho_da_empresa, y = r
        x = "Tamanho da empresa",
        y = "Salário médio ($)") +
   theme_bw()
+
+
+# Análise 10 - salário médio dos países
+medias <-bancoGringo %>%
+  group_by(local_da_empresa) %>% 
+  summarise(
+    media = mean(salario_usdt, na.rm = TRUE),
+  )
+
+#Gráficos de barras da distribuição dos salários médios por países 
+
+# Análise 10.1 -- Top 10 maiores salários por país 
+top10 <- medias %>%
+  top_n(10, media)
+
+grafico_10_1<- ggplot(top10, aes(x = media, y = reorder(local_da_empresa, +media))) + 
+  geom_bar(stat = "identity", fill = "midnightblue") +
+  labs(title = "10 maiores salários por país",
+       x = "País",
+       y = "Salários anuais médios ($)") +
+  theme_bw() 
+
+# Análise 10.2 -- Top 10 menores salários por país
+top_menores10 <- medias %>%
+  top_n(-10, media)
+
+grafico_10_2 <- ggplot(top_menores10, aes(x= media, y = reorder(local_da_empresa, +media))) + 
+  geom_bar(stat = "identity", fill = "red") + 
+  labs(title = "10 menores salários por país",
+       x = "País",
+       y = "Salários anuais médios ($)") +
+  theme_bw()
+
+# Análise 10.3 -- Posição geral dos países
+grafico_10_3 <- ggplot(medias, aes(x =reorder(local_da_empresa, +media) , y = media , 
+                  fill = ifelse(local_da_empresa == "Brazil", "Destaque", "Outros"))) +
+  geom_col() +
+  scale_fill_manual(values = c("Destaque" = "red", "Outros" = "green")) +
+  coord_flip() +
+  labs(
+    title = "Salários médios com destaque para o Brasil",
+    x = "País",
+    y = "Salário anual médio ($)"
+  ) +
+  theme_bw() +
+  theme(legend.position = "none")
