@@ -108,3 +108,7 @@ salario_estado <- bancoBR %>%
 # Formatando os valores para Estado 
 bancoBR <- bancoBR %>%
   mutate(Estado_onde_vive = str_trim(str_remove(Estado_onde_vive, "\\s*\\(.*\\)")))
+
+
+
+

@@ -39,7 +39,7 @@ mapa_estado_salario <- mapa_estados %>%
     # Fazendo o join com base nos nomes dos estados
 mapa_salario <- mapa_estados %>%
   left_join(salario_estado, by = c("name_state" = "Estado_onde_vive"))
-ggplot(data = mapa_salario) +
+mapa <- ggplot(data = mapa_salario) +
   geom_sf(aes(fill = media_salarial), color = "grey") +
   scale_fill_viridis_c(option = "plasma", na.value = "grey90", name = "Salário médio (BRL)") +
   theme_minimal() +
@@ -93,7 +93,23 @@ bancoGringo$tamanho_da_empresa <- factor(bancoGringo$tamanho_da_empresa,
 
 grafico_08 <- ggplot(data = bancoGringo, mapping = aes(x = tamanho_da_empresa , y = salario_usdt ))+
   geom_boxplot(fill = "darkred") +
-  labs(title = "Salários médios para cada tamanho de empresa",
+  labs(title = "Salários médios para cada tamanho de empresa (anual)",
        x = "Tamanho da empresa",
-       y = "Salário anual médio ($)") + 
+       y = "Salário médio ($)") + 
+  theme_bw()
+
+# Análise 9 - Salários médios por tamanho da empresa (banco BR)
+
+#Organizando em ordem decrescente de tamanho de empresa
+bancoBR$tamanho_da_empresa <- factor(bancoBR$tamanho_da_empresa,
+                                     levels = c("de 1 a 5", "de 6 a 10", "de 11 a 50", "de 51 a 100",
+                                                "de 101 a 500", "de 501 a 1.000", "de 1.001 a 3.000",
+                                                "Acima de 3.000", "NA"))
+
+#Gráfico da análise 9
+grafico_09 <- ggplot(data = bancoBR, mapping = aes(x = tamanho_da_empresa, y = renda_anual_usd)) +
+  geom_boxplot(fill = "yellow") +
+  labs(title = "Salários médios por tamanho de empresa (anual)",
+       x = "Tamanho da empresa",
+       y = "Salário médio ($)") +
   theme_bw()
